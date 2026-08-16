@@ -12,26 +12,26 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/photo/Gemini_Generated_Image_btqdi6btqdi6btqd.png",
-      "type": "image/png",
+      "src": "/photo/photo3.jpg",
+      "type": "image/jpeg",
       "sizes": "192x192",
       "purpose": "any"
     },
     {
-      "src": "/photo/Gemini_Generated_Image_btqdi6btqdi6btqd.png",
-      "type": "image/png",
+      "src": "/photo/photo3.jpg",
+      "type": "image/jpeg",
       "sizes": "192x192",
       "purpose": "maskable"
     },
     {
-      "src": "/photo/Gemini_Generated_Image_btqdi6btqdi6btqd.png",
-      "type": "image/png",
+      "src": "/photo/photo3.jpg",
+      "type": "image/jpeg",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "/photo/Gemini_Generated_Image_btqdi6btqdi6btqd.png",
-      "type": "image/png",
+      "src": "/photo/photo3.jpg",
+      "type": "image/jpeg",
       "sizes": "512x512",
       "purpose": "maskable"
     }
