@@ -1,5 +1,5 @@
 // Service Worker with Cache-Busting and Auto-Cleanup
-const CACHE_NAME = 'community-app-v2';
+const CACHE_NAME = 'hayzo-app-v3';
 
 self.addEventListener('install', event => {
   self.skipWaiting();
@@ -7,20 +7,17 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
-  // Always fetch fresh network response during dev & active use
+  // Always fetch directly from network for JS/CSS/module assets
+  if (event.request.url.includes('/assets/')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
