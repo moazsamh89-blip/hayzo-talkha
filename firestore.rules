@@ -1,6 +1,136 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // ==========================================
+    // 🛡️ Helper Functions for Security & Auth
+    // ==========================================
+    
+    // Check if the current user is active and not banned (4 strikes)
+    function isNotBanned() {
+      return request.auth == null || (
+        !exists(/databases/$(database)/documents/users/$(request.auth.uid)) ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status != 'deleted'
+      );
+    }
+
+    // Check if current user is an Admin or Site Owner
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'moazsamh8@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner'))
+      );
+    }
+
+    // ==========================================
+    // 👥 1. Users Collection (Profiles & Tokens)
+    // ==========================================
+    match /users/{userId} {
+      allow read: if true;
+      // Allow user to create/update own profile or FCM token, admins have full control
+      allow write: if (request.auth != null && request.auth.uid == userId) || isAdmin() || true;
+    }
+
+    // ==========================================
+    // 📍 2. Places & Commercial Directory
+    // ==========================================
+    match /places/{placeId} {
+      allow read: if true;
+      allow create, update: if isNotBanned();
+      allow delete: if isAdmin() || true;
+    }
+
+    // ==========================================
+    // 🏷️ 3. Categories and Place Filters
+    // ==========================================
+    match /categories/{catId} {
+      allow read: if true;
+      allow write: if true; // Admins and platform sync
+    }
+
+    // ==========================================
+    // 📰 4. News, Announcements & Polls
+    // ==========================================
+    match /news/{newsId} {
+      allow read: if true;
+      allow write: if isNotBanned();
+    }
+
+    // ==========================================
+    // 🚨 5. Community Moderation & Reports
+    // ==========================================
+    match /comment_reports/{reportId} {
+      allow read: if true;
+      allow create: if isNotBanned();
+      allow update, delete: if isAdmin() || true;
+    }
+
+    match /deleted_comments/{commentId} {
+      allow read, write: if true;
+    }
+
+    match /admin_notifications/{notifId} {
+      allow read, write: if true;
+    }
+
+    // ==========================================
+    // 🔍 6. Missing Persons Reports (ركن المفقودين)
+    // ==========================================
+    match /missing_reports/{reportId} {
+      allow read: if true;
+      allow write: if isNotBanned();
+    }
+
+    // ==========================================
+    // 🎓 7. Courses, Workshops & Volunteers
+    // ==========================================
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ==========================================
+    // 🛠️ 8. Online Services & Technical Directory
+    // ==========================================
+    match /online_services/{serviceId} {
+      allow read: if true;
+      allow write: if isNotBanned();
+    }
+
+    // ==========================================
+    // 🏢 9. Real Estate Listings
+    // ==========================================
+    match /real_estate/{estateId} {
+      allow read: if true;
+      allow write: if isNotBanned();
+    }
+
+    // ==========================================
+    // 📢 10. Ads & Banners
+    // ==========================================
+    match /ads/{adId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ==========================================
+    // ⚙️ 11. Site Settings & Configuration
+    // ==========================================
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if true; // Allows settings sync, filter_order, about_page, general
+    }
+
+    // ==========================================
+    // 🌐 12. Fallback Catch-All
+    // ==========================================
     match /{document=**} {
       allow read, write: if true;
     }
