@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تشخيص الأخطاء - مجتمعنا</title>
+  <style>
+    body { font-family: sans-serif; direction: rtl; padding: 20px; background: #111; color: #eee; }
+    .error { background: #500; padding: 15px; border-radius: 8px; margin: 10px 0; white-space: pre-wrap; font-size: 13px; border: 1px solid #f55; }
+    .ok { background: #050; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #5f5; }
+    .info { background: #003; padding: 15px; border-radius: 8px; margin: 10px 0; border: 1px solid #55f; }
+    h1 { color: #0F766E; }
+    #log { margin-top: 20px; }
+    button { padding: 10px 20px; background: #0F766E; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>🔍 صفحة تشخيص أخطاء الموقع</h1>
+  <p>هذه الصفحة تكشف السبب الحقيقي للشاشة البيضاء</p>
+  <div id="log"></div>
+
+  <script>
+    const log = document.getElementById('log');
+    
+    function addLog(msg, type = 'info') {
+      const div = document.createElement('div');
+      div.className = type;
+      div.textContent = msg;
+      log.appendChild(div);
+    }
+
+    // 1. Test localStorage
+    try {
+      localStorage.setItem('__test__', '1');
+      localStorage.removeItem('__test__');
+      addLog('✅ localStorage يعمل بشكل طبيعي', 'ok');
+    } catch (e) {
+      addLog('❌ localStorage لا يعمل: ' + e.message, 'error');
+    }
+
+    // 2. Check for corrupt localStorage data
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('community_app')) {
+        try {
+          const val = localStorage.getItem(key);
+          JSON.parse(val);
+          keys.push(key + ' ✅');
+        } catch (e) {
+          keys.push(key + ' ❌ CORRUPT: ' + e.message);
+          addLog('❌ بيانات تالفة في: ' + key + ' → ' + e.message, 'error');
+        }
+      }
+    }
+    if (keys.length > 0) {
+      addLog('📦 مفاتيح localStorage:\n' + keys.join('\n'), 'info');
+    } else {
+      addLog('📦 لا توجد بيانات community_app في localStorage', 'info');
+    }
+
+    // 3. Test module imports one by one
+    addLog('⏳ جاري تحميل الموديولات...', 'info');
+    
+    async function testImports() {
+      const modules = [
+        ['/src/lib/store.js', 'Store'],
+        ['/src/lib/gemini.js', 'Gemini'],
+        ['/src/lib/csvPlacesData.js', 'CSV Places Data'],
+        ['/src/lib/geo.js', 'Geo Utils'],
+        ['/src/components/Common/index.jsx', 'Common Components'],
+        ['/src/contexts/AuthContext.jsx', 'Auth Context'],
+        ['/src/components/GeminiChat.jsx', 'GeminiChat'],
+        ['/src/components/Layout/AppLayout.jsx', 'AppLayout'],
+        ['/src/components/Layout/BottomNav.jsx', 'BottomNav'],
+        ['/src/pages/public/NewsPage.jsx', 'NewsPage'],
+        ['/src/pages/public/MapPage.jsx', 'MapPage'],
+        ['/src/App.jsx', 'App (Main)'],
+      ];
+
+      for (const [path, name] of modules) {
+        try {
+          await import(path);
+          addLog('✅ ' + name + ' (' + path + ') تم تحميله بنجاح', 'ok');
+        } catch (e) {
+          addLog('❌ فشل تحميل ' + name + ' (' + path + ')\n' + e.message + '\n' + (e.stack || ''), 'error');
+          // Don't stop - continue checking other modules
+        }
+      }
+      
+      addLog('🏁 انتهى فحص الموديولات', 'info');
+      
+      // 4. Try to render App
+      addLog('⏳ جاري محاولة عرض التطبيق...', 'info');
+      try {
+        const React = await import('/node_modules/.vite/deps/react.js?v=*');
+        const ReactDOM = await import('/node_modules/.vite/deps/react-dom_client.js?v=*');
+        addLog('⚠️ لم أستطع تحميل React من Vite deps مباشرة، لكن هذا متوقع', 'info');
+      } catch (e) {
+        addLog('ℹ️ React/ReactDOM يتم تحميلهم عبر Vite bundler', 'info');
+      }
+    }
+
+    testImports();
+  </script>
+</body>
+</html>
