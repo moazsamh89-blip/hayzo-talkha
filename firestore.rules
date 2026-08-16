@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the current user is active (not deleted/banned)
+    function isNotBanned() {
+      return request.auth != null && 
+        (!exists(/databases/$(database)/documents/users/$(request.auth.uid)) ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status != 'deleted');
+    }
+
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'moazsamh8@gmail.com' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner'
+      );
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      // Anyone can read profiles
+      allow read: if true;
+      // User can create/update own profile if not banned, admin has full access
+      allow write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+    }
+
+    // 2. Places & Commercial directory
+    match /places/{placeId} {
+      allow read: if true;
+      allow write: if isNotBanned() || isAdmin();
+    }
+
+    // 3. Categories and Filters
+    match /categories/{catId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 4. News & Posts (Comments and Polls)
+    match /news/{newsId} {
+      allow read: if true;
+      // Allow reading and writing comments/votes if not banned
+      allow write: if isNotBanned() || isAdmin();
+    }
+
+    // 5. Comment Reports (Prevent duplicate reports by same user)
+    match /comment_reports/{reportId} {
+      allow read: if isAdmin();
+      // Allow report creation only if document ID ends with user's UID (composite key) and user is not banned
+      allow create: if isNotBanned() && 
+        reportId.matches('.*_' + request.auth.uid + '$');
+      allow update, delete: if isAdmin();
+    }
+
+    // 6. Deleted Comments Archive & Admin Notifications
+    match /deleted_comments/{commentId} {
+      allow read, write: if true; // Managed by automated moderation flow and admins
+    }
+
+    match /admin_notifications/{notifId} {
+      allow read, write: if true;
+    }
+
+    // 7. Missing Reports, Courses, Events, Online Services, Ads, Settings
+    match /missing_reports/{reportId} {
+      allow read: if true;
+      allow write: if isNotBanned() || isAdmin();
+    }
+
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /online_services/{serviceId} {
+      allow read: if true;
+      allow write: if isNotBanned() || isAdmin();
+    }
+
+    match /ads/{adId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Default fallback rule
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
