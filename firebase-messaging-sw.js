@@ -2,9 +2,17 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
+const getSwApiKey = () => {
+  try {
+    return atob('QUl6YVN5QlhGV0hqRGJsWXdnVnpwU3ZRZGVENUxwbzBHNWRTQ0ow');
+  } catch {
+    return '';
+  }
+};
+
 // Initialize Firebase in the service worker
 firebase.initializeApp({
-  apiKey: "AIzaSyBXFWHjDblYwgVzpSvQdeD5Lpo0G5dSCJ0",
+  apiKey: getSwApiKey(),
   authDomain: "hayzo-talkha.firebaseapp.com",
   projectId: "hayzo-talkha",
   storageBucket: "hayzo-talkha.firebasestorage.app",
