@@ -27,7 +27,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'إشعار جديد من مجتمع طلخا';
   const notificationOptions = {
     body: payload.notification?.body || payload.data?.body || '',
-    icon: payload.notification?.icon || '/vite.svg',
+    icon: payload.notification?.icon || '/photo/photo3.png',
     data: payload.data || {},
   };
 
