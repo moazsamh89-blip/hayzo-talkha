@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdSense Test - Hayzo</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2784087429133503" crossorigin="anonymous"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; background: #f5f5f5; }
+    .ad-box { background: #fff; border: 2px dashed #ccc; padding: 10px; margin: 20px 0; text-align: center; min-height: 100px; }
+    h1 { color: #079A53; }
+    .status { padding: 10px; background: #e8f5e9; border-radius: 8px; margin: 10px 0; font-size: 14px; }
+    .error { background: #ffebee; }
+  </style>
+</head>
+<body>
+  <h1>🧪 اختبار إعلانات AdSense</h1>
+  <div class="status" id="status">جاري التحميل...</div>
+
+  <h2>Hayzo Banner - Slot 9136199509</h2>
+  <div class="ad-box">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2784087429133503"
+         data-ad-slot="9136199509"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <p>منصة Hayzo هي منصة تفاعلية لمدينة طلخا توفر خدمات متنوعة للمواطنين بما في ذلك الأخبار والخرائط والعقارات والخدمات الإلكترونية.</p>
+
+  <h2>Hayzo Banner 2</h2>
+  <div class="ad-box">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2784087429133503"
+         data-ad-slot="9136199509"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <script>
+    window.addEventListener('load', function() {
+      var statusEl = document.getElementById('status');
+      var msgs = [];
+      if (window.adsbygoogle) {
+        msgs.push('✅ adsbygoogle object exists');
+        msgs.push('📊 Queue length: ' + (window.adsbygoogle.length || 0));
+      } else {
+        msgs.push('❌ adsbygoogle object NOT found');
+      }
+      var insEls = document.querySelectorAll('ins.adsbygoogle');
+      insEls.forEach(function(el, i) {
+        var status = el.getAttribute('data-adsbygoogle-status');
+        var height = el.offsetHeight;
+        var width = el.offsetWidth;
+        msgs.push('📦 Ad ' + (i+1) + ': status=' + (status || 'none') + ', size=' + width + 'x' + height);
+      });
+      statusEl.innerHTML = msgs.join('<br>');
+      if (msgs.some(function(m) { return m.includes('❌'); })) {
+        statusEl.className = 'status error';
+      }
+    });
+  </script>
+</body>
+</html>
