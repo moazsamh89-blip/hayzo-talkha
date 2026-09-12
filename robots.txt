@@ -1,0 +1,16 @@
+﻿# Robots.txt for Hayzo Platform (https://hayzo.vercel.app/)
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+
+# Googlebot specific
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+
+# Google AdSense Crawler
+User-agent: Mediapartners-Google
+Allow: /
+
+Sitemap: https://hayzo.vercel.app/sitemap.xml
