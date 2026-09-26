@@ -88,9 +88,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Google AdSense -->
+    <!-- Google AdSense (Loaded dynamically on production domains to avoid 400 errors on localhost) -->
     <meta name="google-adsense-account" content="ca-pub-2784087429133503" />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2784087429133503" crossorigin="anonymous"></script>
+    <script>
+      (function() {
+        var h = window.location.hostname;
+        if (h !== 'localhost' && h !== '127.0.0.1') {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2784087429133503";
+          s.crossOrigin = "anonymous";
+          document.head.appendChild(s);
+        }
+      })();
+    </script>
     <script>
       (function() {
         try {
@@ -101,9 +112,9 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="./assets/index-zZweHymG.js"></script>
+    <script type="module" crossorigin src="./assets/index-bHUjM9pz.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/vendor-CXjj1fGb.js">
-    <link rel="modulepreload" crossorigin href="./assets/firebase-BNzyR1c5.js">
+    <link rel="modulepreload" crossorigin href="./assets/firebase-BZa0f4PP.js">
     <link rel="modulepreload" crossorigin href="./assets/icons-BCErsJzh.js">
     <link rel="stylesheet" crossorigin href="./assets/index-DD2lfRtT.css">
   </head>
